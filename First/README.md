@@ -27,7 +27,7 @@ This program reads a text file and counts the number of times a specified charac
 1. Include Directives
 
 The necessary header files are included for standard I/O operations, file control, system types, and string manipulation.
-
+```c
 #include <stdlib.h>
 #include <stdio.h>
 #include <fcntl.h>
@@ -35,15 +35,15 @@ The necessary header files are included for standard I/O operations, file contro
 #include <sys/stat.h>
 #include <unistd.h>
 #include <string.h>
-
+```
 2. Helper Function: print_usage
 
 This function prints the correct usage of the program to the standard error stream when the user provides incorrect arguments.
-
+```c
 void print_usage(const char *program_name) {
     fprintf(stderr, "Usage: %s <input_file> <output_file> <character_to_read>\n", program_name);
 }
-
+```
 3. Main Function
 
 The main function handles argument validation, file operations, character counting, and result output.
