@@ -107,7 +107,6 @@
          while (!child_ready) {
              pause();
          }
- 
          printf("I am the child with PID: %d and my parent's PID is: %d\n", getpid(), getppid());
  
          exit(EXIT_SUCCESS);
