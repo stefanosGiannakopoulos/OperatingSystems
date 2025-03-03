@@ -109,14 +109,21 @@ if(buf == NULL){
     return EXIT_FAILURE;
 }
 
-if(read(fd, buf, file_stat.st_size) == -1){ 
-    perror("read error");
-    close(fd);
-    free(buf);
-    return EXIT_FAILURE;
-}
+// read the file contents and store them in the buffer to avoid partial reads
+    ssize_t bytes_read = 0, total_read = 0;
+    while (total_read < file_stat.st_size) {
+        bytes_read = read(fd, buf + total_read, file_stat.st_size - total_read);
+        if (bytes_read == -1) {
+            perror("read error");
+            close(fd);
+            free(buf);
+            return EXIT_FAILURE;
+        }
+        total_read += bytes_read;
+    }
 
 printf("2/4 -> File read successfully :)\n");
+close(fd);
 ```
 
 d. Character Counting
@@ -135,13 +142,10 @@ printf("3/4 -> Character counted successfully: %lld occurences of character %c :
 ```
 
 e. Writing the Result
-
-    Closes the input file descriptor.
     Opens the output file in write-only mode with truncation.
     Formats a result message and writes it to the output file.
     Checks for errors during the write process.
 ```c
-close(fd);
 
 if((fd = open(output_file, O_WRONLY | O_TRUNC)) == -1){
     perror("open error");
@@ -152,15 +156,20 @@ if((fd = open(output_file, O_WRONLY | O_TRUNC)) == -1){
 char result_msg[1024];
 snprintf(result_msg, sizeof(result_msg), "The character '%c' appears %lld times in file %s.\n", char_to_read[0], count, input_file);
 
-ssize_t bytes_written = write(fd, result_msg, strlen(result_msg));
-if (bytes_written == -1) {
-    perror("Error writing to output file");
-    free(buf);
-    close(fd);
-    return EXIT_FAILURE;  
-}
+  size_t bytes_written = 0, total_written = 0;
+  size_t result_length = strlen(result_msg);
+    while (total_written < result_length) {
+        bytes_written = write(fd, result_msg + total_written, result_length - total_written);
+        if (bytes_written == -1) {
+            perror("Error writing to output file");
+            free(buf);
+            close(fd);
+            return EXIT_FAILURE;
+        }
+        total_written += bytes_written;
+    }
 
-printf("4/4 -> Result written successfully :)\n");
+    printf("4/4 -> Result written successfully :)\n");
 ```
 f. Cleanup and Exit
 
