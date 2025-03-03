@@ -1,1 +1,0 @@
-The character '*' appears 0 times in file ../../Tests/input.txt.
