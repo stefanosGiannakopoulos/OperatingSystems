@@ -1,0 +1,4 @@
+I am the best software engineer around, Stefanos Giannakopoulos :)
+I like C for OS concepts and Parallelism, C++ for Game Engines and Python for all the rest ... 
+
+I->3 , C->3, a->13?
