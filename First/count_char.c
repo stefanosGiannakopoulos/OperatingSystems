@@ -74,14 +74,21 @@ int main(int argc, char ** argv){
         return EXIT_FAILURE;
     }
  
-    // read the file contents and store them in the buffer
-    if(read(fd,buf,file_stat.st_size)==-1){ 
-        perror("read error"); // print the error message
-        close(fd); // close the file descriptor
-        free(buf); // free the memory allocated for the buffer
-        return EXIT_FAILURE;
+    // read the file contents and store them in the buffer to avoid partial reads
+    ssize_t bytes_read = 0, total_read = 0;
+    while (total_read < file_stat.st_size) {
+        bytes_read = read(fd, buf + total_read, file_stat.st_size - total_read);
+        if (bytes_read == -1) {
+            perror("read error");
+            close(fd);
+            free(buf);
+            return EXIT_FAILURE;
+        }
+        total_read += bytes_read;
     }
     
+    close(fd); // close the file descriptor for the input file
+
     printf("2/4 -> File read successfully :)\n");
 
     // Time to count the number of times the character appears in the file ... 
@@ -96,7 +103,7 @@ int main(int argc, char ** argv){
     
     printf("3/4 -> Character counted successfully: %lld occurences of character %c :)\n",count,char_to_read[0]);
 
-    close(fd); // close the file descriptor for the input file
+
     
     // Now we need to write the result in the output file ...
     
@@ -112,13 +119,18 @@ int main(int argc, char ** argv){
     snprintf(result_msg, sizeof(result_msg), "The character '%c' appears %lld times in file %s.\n", char_to_read[0], count, input_file);
     
 
-    // Write the result to the output file
-    ssize_t bytes_written = write(fd, result_msg, strlen(result_msg));
-    if (bytes_written == -1) {
-        perror("Error writing to output file");
-        free(buf);
-        close(fd);
-        return EXIT_FAILURE;  
+    // Write the result to the output file to avoid partial writes 
+    ssize_t bytes_written = 0, total_written = 0;
+    size_t result_length = strlen(result_msg);
+    while (total_written < result_length) {
+        bytes_written = write(fd, result_msg + total_written, result_length - total_written);
+        if (bytes_written == -1) {
+            perror("Error writing to output file");
+            free(buf);
+            close(fd);
+            return EXIT_FAILURE;
+        }
+        total_written += bytes_written;
     }
 
     printf("4/4 -> Result written successfully :)\n");
