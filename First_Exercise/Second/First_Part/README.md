@@ -134,7 +134,3 @@ I am the child with PID: 12345 and my parent's PID is: 12344.
 ✔ **Uses `sigaction()` Instead of `signal()`** – More robust and portable.  
 
 ---
-
-## **Next Steps**
-Would you like to extend this to **multiple child processes** or handle additional signals? 🚀
-
